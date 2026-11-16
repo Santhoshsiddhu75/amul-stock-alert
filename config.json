@@ -1,0 +1,11 @@
+{
+  "pincode": "",
+  "ntfy_server": "https://ntfy.sh",
+  "ntfy_topic": "",
+  "check_every_seconds": 60,
+  "notify_when_sold_out": true,
+  "products": [
+    "https://shop.amul.com/en/product/amul-chocolate-whey-protein-34-g-or-pack-of-60-sachets",
+    "https://shop.amul.com/en/product/amul-chocolate-whey-protein-34-g-or-pack-of-30-sachets"
+  ]
+}
