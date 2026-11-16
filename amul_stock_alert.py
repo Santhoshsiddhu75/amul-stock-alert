@@ -16,7 +16,7 @@ import sys
 import time
 import traceback
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -25,6 +25,7 @@ HERE = Path(__file__).resolve().parent
 CONFIG_FILE = HERE / "config.json"
 STATE_FILE = HERE / "state.json"
 LOG_FILE = HERE / "amul_stock_alert.log"
+INDIA = timezone(timedelta(hours=5, minutes=30))  # "once a day" means an India calendar day
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
 
@@ -186,18 +187,25 @@ def run(once=False, minutes=None):
                 for url in cfg["products"]:
                     s = checker.check(url)
                     prev = state.get(url, {}).get("in_stock")
+                    last_alert = state.get(url, {}).get("last_alert_date")
+                    today = datetime.now(INDIA).date().isoformat()
                     log(f"{'IN STOCK ' if s['in_stock'] else 'SOLD OUT '} qty={s['quantity']:<4} {s['name']}")
                     if s["in_stock"] and prev is False:
-                        notify(cfg, "Back in stock: " + s["name"],
-                               f"{s['name']} is back in stock on Amul "
-                               f"(qty {s['quantity']}, Rs {s['price']}). Order now!",
-                               url=url, priority="urgent", tags="rotating_light,shopping_cart")
+                        if last_alert == today:
+                            log("Back in stock, but already alerted today for this item; staying quiet")
+                        else:
+                            notify(cfg, "Back in stock: " + s["name"],
+                                   f"{s['name']} is back in stock on Amul "
+                                   f"(qty {s['quantity']}, Rs {s['price']}). Order now!",
+                                   url=url, priority="urgent", tags="rotating_light,shopping_cart")
+                            last_alert = today
                     elif not s["in_stock"] and prev is True and cfg.get("notify_when_sold_out", True):
                         notify(cfg, "Sold out: " + s["name"],
                                f"{s['name']} just went out of stock. I'll alert you when it's back.",
                                url=url, priority="low", tags="hourglass")
                     state[url] = {"in_stock": s["in_stock"], "quantity": s["quantity"],
-                                  "checked": datetime.now().isoformat(timespec="seconds")}
+                                  "checked": datetime.now(INDIA).isoformat(timespec="seconds"),
+                                  "last_alert_date": last_alert}
                     save_state(state)
                 failures = 0
                 successes += 1
