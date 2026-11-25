@@ -1,14 +1,14 @@
 {
   "https://shop.amul.com/en/product/amul-chocolate-whey-protein-34-g-or-pack-of-60-sachets": {
     "in_stock": true,
-    "quantity": 96,
-    "checked": "2026-11-25T08:40:32+05:30",
+    "quantity": 95,
+    "checked": "2026-11-25T08:45:03+05:30",
     "last_alert_date": "2026-11-25"
   },
   "https://shop.amul.com/en/product/amul-chocolate-whey-protein-34-g-or-pack-of-30-sachets": {
     "in_stock": true,
     "quantity": 70,
-    "checked": "2026-11-25T08:40:36+05:30",
+    "checked": "2026-11-25T08:45:08+05:30",
     "last_alert_date": "2026-11-23"
   }
 }
